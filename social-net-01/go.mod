@@ -1,3 +1,3 @@
-module go.vardan.dev/highload-architect/social-net-01
+module go.vardan.dev/highload-architect
 
 go 1.19
