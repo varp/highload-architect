@@ -8,13 +8,13 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/ports/http/v1"
-	"go.vardan.dev/highload-architect/social-net-01/internal/domain/repo"
-	"go.vardan.dev/highload-architect/social-net-01/internal/domain/usecases"
+	userRepo "go.vardan.dev/highload-architect/social-net-01/internal/domain/repo/user"
+	userUsecase "go.vardan.dev/highload-architect/social-net-01/internal/domain/usecases/user"
 )
 
 func main() {
-	userUsecase := usecases.NewUserUsecase(repo.NewUserRepository())
-	apiV1 := v1.NewApi(userUsecase)
+	uu := userUsecase.New(userRepo.New())
+	apiV1 := v1.NewApi(uu)
 
 	swagger, err := v1.GetSwagger()
 	if err != nil {

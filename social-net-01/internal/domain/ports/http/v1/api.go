@@ -2,14 +2,14 @@ package v1
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.vardan.dev/highload-architect/social-net-01/internal/domain/usecases"
+	"go.vardan.dev/highload-architect/social-net-01/internal/domain/usecases/user"
 )
 
 type Api struct {
-	userUsecase usecases.UserUsecase
+	userUsecase user.Usecase
 }
 
-func NewApi(usecase usecases.UserUsecase) *Api {
+func NewApi(usecase user.Usecase) *Api {
 	return &Api{
 		userUsecase: usecase,
 	}
