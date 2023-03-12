@@ -3,11 +3,11 @@ package user
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models/user"
+	"go.vardan.dev/highload-architect/social-net-01/pkg/tools"
 )
 
 type repository struct {
@@ -15,13 +15,15 @@ type repository struct {
 }
 
 func New() user.Repository {
+	env := tools.NewEnv("")
+
 	// Capture connection properties.
 	cfg := mysql.Config{
-		User:   os.Getenv("SOCIAL_NET_01_DB_USER"), // root
-		Passwd: os.Getenv("SOCIAL_NET_01_DB_PASS"), // pass
-		Net:    os.Getenv("SOCIAL_NET_01_DB_NET"),  // tcp
-		Addr:   os.Getenv("SOCIAL_NET_01_DB_ADDR"), // 127.0.0.1:3306
-		DBName: os.Getenv("SOCIAL_NET_01_DB_NAME"), // social-net-01
+		User:   env.GetWithDefault("DB_USER", "root"),           // root
+		Passwd: env.GetWithDefault("DB_PASS", "pass"),           // pass
+		Net:    env.GetWithDefault("DB_NET", "tcp"),             // tcp
+		Addr:   env.GetWithDefault("DB_ADDR", "127.0.0.1:3306"), // 127.0.0.1:3306
+		DBName: env.GetWithDefault("DB_NAME", "social-net-01"),  // social-net-01
 	}
 	// Get a database handle.
 	var err error
@@ -37,17 +39,25 @@ func New() user.Repository {
 		log.Fatal(pingErr)
 	}
 	fmt.Println("Connected!")
+
 	return &repository{
 		db: db,
 	}
 }
 
 func (r *repository) Create(user *user.User) error {
+	sql := "INSERT INTO users (id, age, biography, city, firstName, secondName, passwordHash) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	_, err := r.db.Exec(sql, user.Id, user.Age, user.Biography, user.City, user.FirstName, user.SecondName,
+		user.PasswordHash)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (r *repository) Get(id string) (*user.User, error) {
-	row, err := r.db.Queryx("SELECT * FROM user WHERE uid = ?", id)
+	row, err := r.db.Queryx("SELECT * FROM users WHERE uid = ?", id)
 	if err != nil {
 		log.Fatalf("User with id %s not found", id)
 		return nil, err
@@ -64,9 +74,21 @@ func (r *repository) Get(id string) (*user.User, error) {
 }
 
 func (r *repository) Update(user *user.User) error {
+	sql := "UPDATE users SET age = ?, biography = ?, city = ?, firstName = ?, secondName = ?, passwordHash = ? WHERE id = ?"
+	_, err := r.db.Exec(sql, user.Age, user.Biography, user.City, user.FirstName, user.SecondName,
+		user.PasswordHash, user.Id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (r *repository) Delete(user *user.User) error {
+	_, err := r.db.Exec("DELETE FROM users WHERE id = ?", user.Id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

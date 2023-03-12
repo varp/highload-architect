@@ -1,42 +1,62 @@
 package user
 
-type UUIDGenerator interface {
-	Generate() string
-}
-
-type PasswordEncryptor interface {
-	Encrypt(password string) string
-}
-
-type PasswordDecryptor interface {
-	Decrypt(encrypted string) string
-}
+import "fmt"
 
 type User struct {
-	Id         string
-	Age        int
-	Biography  string
-	City       string
-	FirstName  string
-	SecondName string
-	Password   string
+	Id           string
+	Age          int
+	Biography    string
+	City         string
+	FirstName    string
+	SecondName   string
+	PasswordHash string
 }
 
-func (u *User) SetPassword(password string, encryptor PasswordEncryptor) error {
-	return nil
+var (
+	idGenerator       UUIDGenerator
+	passwordEncryptor PasswordEncryptor
+)
+
+func Configure(generator UUIDGenerator, encryptor PasswordEncryptor) {
+	idGenerator = generator
+	passwordEncryptor = encryptor
 }
 
-func (u *User) CheckPassword(password string, decryptor PasswordDecryptor) (bool, error) {
-	return true, nil
+func checkConfiguration() {
+	if idGenerator == nil {
+		panic(fmt.Errorf("confgiuration error: idGenerator is nil"))
+	}
+
+	if passwordEncryptor == nil {
+		panic(fmt.Errorf("configuration error: passwordEncryptor is nil"))
+	}
 }
 
-func (u *User) SetID(uuidGenerator UUIDGenerator) {
-	u.Id = uuidGenerator.Generate()
+func New(age int, biography, city, firstName, secondName, password string) *User {
+	checkConfiguration()
+
+	u := User{
+		Id:           idGenerator.Generate(),
+		Age:          age,
+		Biography:    biography,
+		City:         city,
+		FirstName:    firstName,
+		SecondName:   secondName,
+		PasswordHash: passwordEncryptor.Encrypt(password),
+	}
+
+	return &u
 }
 
-type Repository interface {
-	Create(u *User) error
-	Get(id string) (*User, error)
-	Update(u *User) error
-	Delete(u *User) error
+func (u *User) SetPassword(password string) {
+	checkConfiguration()
+
+	u.PasswordHash = passwordEncryptor.Encrypt(password)
+}
+
+func (u *User) CheckPassword(password string) bool {
+	checkConfiguration()
+
+	encrypted := passwordEncryptor.Encrypt(password)
+	return u.PasswordHash == encrypted
 }

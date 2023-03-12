@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	opapiMiddleware "github.com/deepmap/oapi-codegen/pkg/middleware"
+	openApiMiddleware "github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/ports/http/v1"
@@ -28,7 +28,7 @@ func main() {
 
 	e := echo.New()
 	e.Use(middleware.Logger())
-	e.Use(opapiMiddleware.OapiRequestValidator(swagger))
+	e.Use(openApiMiddleware.OapiRequestValidator(swagger))
 
 	v1.RegisterHandlers(e, apiV1)
 
