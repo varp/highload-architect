@@ -10,10 +10,11 @@ import (
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/ports/http/v1"
 	userRepo "go.vardan.dev/highload-architect/social-net-01/internal/domain/repo/user"
 	userUsecase "go.vardan.dev/highload-architect/social-net-01/internal/domain/usecases/user"
+	"go.vardan.dev/highload-architect/social-net-01/pkg/tools"
 )
 
 func main() {
-	uu := userUsecase.New(userRepo.New())
+	uu := userUsecase.New(userRepo.New(), tools.NewUUIDGenerator(), tools.NewPasswordEncryptor())
 	apiV1 := v1.NewApi(uu)
 
 	swagger, err := v1.GetSwagger()

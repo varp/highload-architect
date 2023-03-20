@@ -1,6 +1,8 @@
 package user
 
 import (
+	"fmt"
+
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models/user"
 )
 
@@ -12,23 +14,36 @@ type Usecase interface {
 
 type userUsecase struct {
 	ur user.Repository
+	ug user.UUIDGenerator
+	pe user.PasswordEncryptor
 }
 
-func New(ur user.Repository) Usecase {
-	return &userUsecase{ur: ur}
+func New(ur user.Repository, ug user.UUIDGenerator, pe user.PasswordEncryptor) Usecase {
+	user.Configure(ug, pe)
+	return &userUsecase{ur, ug, pe}
 }
 
-func (u *userUsecase) Login(userId, password string) error {
+func (uu *userUsecase) Login(userId, password string) error {
+	retErr := fmt.Errorf("invalid userId or password was supplied")
+
+	u, err := uu.ur.Get(userId)
+	if err != nil {
+		return retErr
+	}
+
+	if !u.CheckPassword(password) {
+		return retErr
+	}
+
+	return nil
+}
+
+func (uu *userUsecase) Register(user *user.User) error {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (u *userUsecase) Register(user *user.User) error {
-	// TODO implement me
-	panic("implement me")
-}
-
-func (u *userUsecase) Get(userId string) (*user.User, error) {
+func (uu *userUsecase) Get(userId string) (*user.User, error) {
 	// TODO implement me
 	panic("implement me")
 }

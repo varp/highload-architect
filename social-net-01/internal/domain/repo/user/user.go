@@ -63,6 +63,11 @@ func (r *repository) Get(id string) (*user.User, error) {
 		return nil, err
 	}
 
+	if !row.Next() {
+		err = fmt.Errorf("user with specified ID %s not found", id)
+		return nil, err
+	}
+
 	var u user.User
 	err = row.StructScan(&u)
 	if err != nil {
