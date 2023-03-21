@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SOCIAL_NET_01_DB_PASS:-pass}
+    volumes:
+      - "../sql/migrations:/sql/migrations"
+      - "../scripts:/scripts"
+    ports:
+      - "3306:3306"

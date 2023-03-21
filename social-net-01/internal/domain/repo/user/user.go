@@ -19,11 +19,11 @@ func New() user.Repository {
 
 	// Capture connection properties.
 	cfg := mysql.Config{
-		User:   env.GetWithDefault("DB_USER", "root"),           // root
-		Passwd: env.GetWithDefault("DB_PASS", "pass"),           // pass
-		Net:    env.GetWithDefault("DB_NET", "tcp"),             // tcp
-		Addr:   env.GetWithDefault("DB_ADDR", "127.0.0.1:3306"), // 127.0.0.1:3306
-		DBName: env.GetWithDefault("DB_NAME", "social-net-01"),  // social-net-01
+		User:   env.GetWithDefault("DB_USER", "root"),
+		Passwd: env.GetWithDefault("DB_PASS", "pass"),
+		Net:    env.GetWithDefault("DB_NET", "tcp"),
+		Addr:   env.GetWithDefault("DB_ADDR", "127.0.0.1:3306"),
+		DBName: env.GetWithDefault("DB_NAME", "social-net"),
 	}
 	// Get a database handle.
 	var err error

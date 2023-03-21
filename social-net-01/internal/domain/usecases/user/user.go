@@ -39,11 +39,19 @@ func (uu *userUsecase) Login(userId, password string) error {
 }
 
 func (uu *userUsecase) Register(user *user.User) error {
-	// TODO implement me
-	panic("implement me")
+	err := uu.ur.Create(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (uu *userUsecase) Get(userId string) (*user.User, error) {
-	// TODO implement me
-	panic("implement me")
+	u, err := uu.ur.Get(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
 }
