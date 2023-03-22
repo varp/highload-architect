@@ -1,6 +1,17 @@
-version: "3"
+version: "3.9"
 
 services:
+  app:
+    image: social-net-server:latest
+    build:
+      dockerfile: deployments/app/Dockerfile
+      context: ..
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - social-net-network
+
   db:
     image: mysql:8
     environment:
@@ -10,3 +21,15 @@ services:
       - "../scripts:/scripts"
     ports:
       - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysql", "-uroot", "-hlocalhost", "-p${SOCIAL_NET_01_DB_PASS:-pass}" ]
+      interval: 10s
+      timeout: 1s
+      retries: 10
+      start_period: 10s
+    networks:
+      - social-net-network
+
+
+networks:
+  social-net-network:

@@ -7,8 +7,11 @@ define putenv
 endef
 
 export DOCKER_BUILDKIT = 1
+export PROJECT_NAME = social-net
+export APP = $(PROJECT_NAME)-server
+export GIT_SHA = $(shell git rev-parse --short HEAD)
+export VERSION = $(shell git describe --tags | cut -f2 -d'/')
 
-PROJECT_DIR="$(shell pwd)"
 MIGRATIONS_DIR ?= sql/migrations
 
 
@@ -32,15 +35,22 @@ sql-migrate:
 
 # deploy
 up-dev: COMPOSE_FILE=deployments/docker-compose.dev.yml
-
 up-dev:
 	$(call putenv,COMPOSE_FILE,$(COMPOSE_FILE))
+	$(call putenv,COMPOSE_PROJECT_NAME,$(PROJECT_NAME))
 	docker-compose up -d --remove-orphans
 
 up: up-dev
 
 stop:
 	docker-compose stop
+down:
+	docker-compose down
 
 serve: go up
 	go run ./cmd/server
+
+
+# build
+@app:
+	docker buildx build -f deployments/app/Dockerfile -t $(APP):$(VERSION) -t $(APP):latest .
