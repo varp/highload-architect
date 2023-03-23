@@ -6,6 +6,8 @@ services:
     build:
       dockerfile: deployments/app/Dockerfile
       context: ..
+    environment:
+      SOCIAL_NET_01_DB_HOST: db
     depends_on:
       db:
         condition: service_healthy
@@ -13,7 +15,7 @@ services:
       - social-net-network
 
   db:
-    image: mysql:8
+    image: mysql:8.0.32
     environment:
       MYSQL_ROOT_PASSWORD: ${SOCIAL_NET_01_DB_PASS:-pass}
     volumes:

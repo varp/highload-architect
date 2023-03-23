@@ -1,4 +1,4 @@
-.PHONY: go tools-oapi-codegen generate-server-and-types sql-create-migration sql-migrate up-dev up
+.PHONY: go tools-oapi-codegen up
 
 define putenv
 	@touch .env
@@ -47,10 +47,13 @@ stop:
 down:
 	docker-compose down
 
-serve: go up
+run:
 	go run ./cmd/server
 
 
 # build
+@build:
+	go build -v -o social-net-server ./cmd/server
+
 @app:
 	docker buildx build -f deployments/app/Dockerfile -t $(APP):$(VERSION) -t $(APP):latest .
