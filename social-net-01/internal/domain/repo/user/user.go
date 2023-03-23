@@ -19,10 +19,15 @@ func New() user.Repository {
 
 	// Capture connection properties.
 	cfg := mysql.Config{
+		Addr: env.GetWithDefault("DB_ADDR",
+			fmt.Sprintf("%s:%s",
+				env.GetWithDefault("DB_HOST", "localhost"),
+				env.GetWithDefault("DB_PORT", "3306"),
+			),
+		),
 		User:   env.GetWithDefault("DB_USER", "root"),
 		Passwd: env.GetWithDefault("DB_PASS", "pass"),
 		Net:    env.GetWithDefault("DB_NET", "tcp"),
-		Addr:   env.GetWithDefault("DB_ADDR", "127.0.0.1:3306"),
 		DBName: env.GetWithDefault("DB_NAME", "social-net"),
 	}
 	// Get a database handle.
@@ -46,7 +51,9 @@ func New() user.Repository {
 }
 
 func (r *repository) Create(user *user.User) error {
-	sql := "INSERT INTO users (id, age, biography, city, firstName, secondName, passwordHash) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	sql := "INSERT INTO users (id, age, biography, city, first_name, second_name, password_hash) VALUES (?, ?, ?," +
+		" " +
+		"?, ?, ?, ?)"
 	_, err := r.db.Exec(sql, user.Id, user.Age, user.Biography, user.City, user.FirstName, user.SecondName,
 		user.PasswordHash)
 	if err != nil {
