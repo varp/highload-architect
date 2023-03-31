@@ -17,13 +17,26 @@ func NewApi(usecase user.Usecase) *Api {
 }
 
 func (a *Api) PostLogin(ctx echo.Context) error {
-	// TODO implement me
-	panic("implement me")
+	var apiLoginBody PostLoginJSONRequestBody
+
+	if err := ctx.Bind(&apiLoginBody); err != nil {
+		return err
+	}
+
+	if err := a.userUsecase.Login(*apiLoginBody.Id, *apiLoginBody.Password); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *Api) GetUserGetId(ctx echo.Context, id UserId) error {
-	// TODO implement me
-	panic("implement me")
+	domainUserModel, err := a.userUsecase.Get(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *Api) PostUserRegister(ctx echo.Context) error {
