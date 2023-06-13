@@ -31,10 +31,10 @@ func (a *Api) PostLogin(ctx echo.Context) error {
 }
 
 func (a *Api) GetUserGetId(ctx echo.Context, id UserId) error {
-	domainUserModel, err := a.userUsecase.Get(id)
-	if err != nil {
-		return err
-	}
+	//domainUserModel, err := a.userUsecase.Get(id)
+	//if err != nil {
+	//	return err
+	//}
 
 	return nil
 }
