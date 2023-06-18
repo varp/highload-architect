@@ -1,4 +1,4 @@
-use `social-net`
+USE `social-net`
 ;
 
 DELIMITER $$
@@ -32,4 +32,4 @@ END$$
 DELIMITER ;
 
 CALL migration_20230613212639();
-DROP FUNCTION IF EXISTS migration_20230613212639;
+DROP PROCEDURE IF EXISTS migration_20230613212639;

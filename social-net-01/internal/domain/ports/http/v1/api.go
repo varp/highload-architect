@@ -2,15 +2,15 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	domainUser "go.vardan.dev/highload-architect/social-net-01/internal/domain/models/user"
-	"go.vardan.dev/highload-architect/social-net-01/internal/domain/usecases/user"
+	domainUser "go.vardan.dev/highload-architect/social-net-01/internal/domain/models"
+	"go.vardan.dev/highload-architect/social-net-01/internal/domain/usecases"
 )
 
 type Api struct {
-	userUsecase user.Usecase
+	userUsecase usecases.UserUsecase
 }
 
-func NewApi(usecase user.Usecase) *Api {
+func NewApi(usecase usecases.UserUsecase) *Api {
 	return &Api{
 		userUsecase: usecase,
 	}
@@ -49,7 +49,7 @@ func (a *Api) PostUserRegister(c *gin.Context) {
 		return
 	}
 
-	domainUserModel := domainUser.New(*apiUser.Age, *apiUser.Biography, *apiUser.City, *apiUser.FirstName,
+	domainUserModel := domainUser.NewUser(*apiUser.Age, *apiUser.Biography, *apiUser.City, *apiUser.FirstName,
 		*apiUser.SecondName, *apiUser.Password)
 
 	err = a.userUsecase.Register(domainUserModel)
@@ -58,7 +58,7 @@ func (a *Api) PostUserRegister(c *gin.Context) {
 		return
 	}
 
-	c.Status(200)
+	c.JSON(201, gin.H{"user_id": domainUserModel.Id})
 }
 
 func (a *Api) PutFriendDeleteUserId(c *gin.Context, userId UserId) {

@@ -1,13 +1,13 @@
 package tools
 
 import (
-	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models/user"
+	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type PasswordEncryptor struct{}
 
-func NewPasswordEncryptor() user.PasswordEncryptor {
+func NewPasswordEncryptor() models.PasswordEncryptor {
 	return &PasswordEncryptor{}
 }
 
@@ -17,4 +17,9 @@ func (p *PasswordEncryptor) Encrypt(password string) string {
 		panic(err)
 	}
 	return string(bytes)
+}
+
+func (p *PasswordEncryptor) Compare(hashedPassword, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
 }

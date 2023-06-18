@@ -2,12 +2,12 @@ package tools
 
 import (
 	"github.com/google/uuid"
-	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models/user"
+	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models"
 )
 
 type UUIDGenerator struct{}
 
-func NewUUIDGenerator() user.UUIDGenerator {
+func NewUUIDGenerator() models.UUIDGenerator {
 	return &UUIDGenerator{}
 }
 

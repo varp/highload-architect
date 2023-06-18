@@ -1,6 +1,9 @@
 package tools
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 const DefaultPrefix = "SOCIAL_NET_01_"
 
@@ -8,12 +11,12 @@ type Env struct {
 	prefix string
 }
 
-func NewEnv(prefix string) *Env {
+func NewEnv(prefix ...string) *Env {
 	e := &Env{}
 	e.ChangePrefix(DefaultPrefix)
 
 	if len(prefix) > 0 {
-		e.ChangePrefix(prefix)
+		e.ChangePrefix(strings.Join(prefix, "_"))
 	}
 
 	return e

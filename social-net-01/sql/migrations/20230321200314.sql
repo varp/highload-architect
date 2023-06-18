@@ -1,2 +1,3 @@
-create database if not exists `social-net` character set utf8mb4 collate utf8mb4_unicode_ci
+CREATE
+    DATABASE IF NOT EXISTS `social-net` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci
 ;

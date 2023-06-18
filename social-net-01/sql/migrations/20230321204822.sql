@@ -1,7 +1,7 @@
-use `social-net`
+USE `social-net`
 ;
 
-create table if not exists `users`
+CREATE TABLE IF NOT EXISTS `users`
 (
     id            varchar(50) PRIMARY KEY,
     age           int8,

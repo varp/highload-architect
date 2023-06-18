@@ -34,19 +34,17 @@ sql-migrate:
 	docker-compose exec db /bin/sh -c "/scripts/migrate.sh"
 
 # deploy
+up-infra up-dev: COMPOSE_FILE=deployments/docker-compose.dev.yml
 
-up-infra: COMPOSE_FILE=deployments/docker-compose.dev.yml
 up-infra:
 	$(call putenv,COMPOSE_FILE,$(COMPOSE_FILE))
 	$(call putenv,COMPOSE_PROJECT_NAME,$(PROJECT_NAME))
-	docker-composer up -d --remove-orphans db
+	docker-compose up -d --remove-orphans db
 
-up-dev: COMPOSE_FILE=deployments/docker-compose.dev.yml
 up-dev:
 	$(call putenv,COMPOSE_FILE,$(COMPOSE_FILE))
 	$(call putenv,COMPOSE_PROJECT_NAME,$(PROJECT_NAME))
 	docker-compose up -d --remove-orphans app
-
 
 
 

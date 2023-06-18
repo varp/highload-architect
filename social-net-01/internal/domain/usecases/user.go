@@ -1,25 +1,24 @@
-package user
+package usecases
 
 import (
 	"fmt"
-
-	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models/user"
+	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models"
 )
 
-type Usecase interface {
+type UserUsecase interface {
 	Login(userId, password string) error
-	Register(u *user.User) error
-	Get(userId string) (*user.User, error)
+	Register(u *models.User) error
+	Get(userId string) (*models.User, error)
 }
 
 type userUsecase struct {
-	ur user.Repository
-	ug user.UUIDGenerator
-	pe user.PasswordEncryptor
+	ur models.UserRepository
+	ug models.UUIDGenerator
+	pe models.PasswordEncryptor
 }
 
-func New(ur user.Repository, ug user.UUIDGenerator, pe user.PasswordEncryptor) Usecase {
-	user.Configure(ug, pe)
+func NewUserUsecase(ur models.UserRepository, ug models.UUIDGenerator, pe models.PasswordEncryptor) UserUsecase {
+	models.Configure(ug, pe)
 	return &userUsecase{ur, ug, pe}
 }
 
@@ -38,7 +37,7 @@ func (uu *userUsecase) Login(userId, password string) error {
 	return nil
 }
 
-func (uu *userUsecase) Register(user *user.User) error {
+func (uu *userUsecase) Register(user *models.User) error {
 	err := uu.ur.Create(user)
 	if err != nil {
 		return err
@@ -47,7 +46,7 @@ func (uu *userUsecase) Register(user *user.User) error {
 	return nil
 }
 
-func (uu *userUsecase) Get(userId string) (*user.User, error) {
+func (uu *userUsecase) Get(userId string) (*models.User, error) {
 	u, err := uu.ur.Get(userId)
 	if err != nil {
 		return nil, err

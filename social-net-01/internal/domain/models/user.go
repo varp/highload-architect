@@ -1,15 +1,33 @@
-package user
+package models
 
-import "fmt"
+import (
+	"fmt"
+)
+
+type UUIDGenerator interface {
+	Generate() string
+}
+
+type PasswordEncryptor interface {
+	Encrypt(password string) string
+	Compare(hashedPassword, password string) bool
+}
+
+type UserRepository interface {
+	Create(u *User) error
+	Get(id string) (*User, error)
+	Update(u *User) error
+	Delete(u *User) error
+}
 
 type User struct {
-	Id           string
-	Age          int
-	Biography    string
-	City         string
-	FirstName    string
-	SecondName   string
-	PasswordHash string
+	Id           string `db:"id"`
+	Age          int    `db:"age"`
+	Biography    string `db:"biography"`
+	City         string `db:"city"`
+	FirstName    string `db:"first_name"`
+	SecondName   string `db:"second_name"`
+	PasswordHash string `db:"password_hash"`
 }
 
 var (
@@ -32,7 +50,7 @@ func checkConfiguration() {
 	}
 }
 
-func New(age int, biography, city, firstName, secondName, password string) *User {
+func NewUser(age int, biography, city, firstName, secondName, password string) *User {
 	checkConfiguration()
 
 	u := User{
@@ -57,6 +75,5 @@ func (u *User) SetPassword(password string) {
 func (u *User) CheckPassword(password string) bool {
 	checkConfiguration()
 
-	encrypted := passwordEncryptor.Encrypt(password)
-	return u.PasswordHash == encrypted
+	return passwordEncryptor.Compare(u.PasswordHash, password)
 }
