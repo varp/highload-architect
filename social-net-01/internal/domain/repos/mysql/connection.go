@@ -20,10 +20,11 @@ func Connect() *sqlx.DB {
 				env.GetWithDefault("DB_PORT", "3306"),
 			),
 		),
-		User:   env.GetWithDefault("DB_USER", "root"),
-		Passwd: env.GetWithDefault("DB_PASS", "pass"),
-		Net:    env.GetWithDefault("DB_NET", "tcp"),
-		DBName: env.GetWithDefault("DB_NAME", "social-net"),
+		User:      env.GetWithDefault("DB_USER", "root"),
+		Passwd:    env.GetWithDefault("DB_PASS", "pass"),
+		Net:       env.GetWithDefault("DB_NET", "tcp"),
+		DBName:    env.GetWithDefault("DB_NAME", "social-net"),
+		ParseTime: true,
 	}
 	// Get a database handle.
 	var err error

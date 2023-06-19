@@ -9,10 +9,12 @@ type ApiKey struct {
 }
 
 type ApiKeyRepository interface {
-	Create(userId string) error
+	Create(userId string) (*ApiKey, error)
 	Get(key string) (*ApiKey, error)
+	GetByUserId(userId string) (*ApiKey, error)
+	Delete(key string) error
 }
 
 func (a *ApiKey) Expired() bool {
-	return a.AuthenticatedAt.Add(1 * time.Hour).Before(time.Now())
+	return a.AuthenticatedAt.UTC().Add(1 * time.Hour).Before(time.Now().UTC())
 }

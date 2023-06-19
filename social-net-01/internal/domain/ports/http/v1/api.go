@@ -2,8 +2,10 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	domainUser "go.vardan.dev/highload-architect/social-net-01/internal/domain/models"
+	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models"
+	"go.vardan.dev/highload-architect/social-net-01/internal/domain/repos"
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/usecases"
+	"go.vardan.dev/highload-architect/social-net-01/pkg/tools"
 )
 
 type Api struct {
@@ -29,7 +31,36 @@ func (a *Api) PostLogin(c *gin.Context) {
 		return
 	}
 
-	c.Status(200)
+	var apiKey *models.ApiKey
+	apiKeyRepo := repos.NewApiKeyRepository(tools.NewUUIDGenerator())
+	apiKey, err := apiKeyRepo.GetByUserId(*apiLoginBody.Id)
+
+	if err != nil {
+		c.String(500, err.Error())
+	}
+
+	createApiKey := func() *models.ApiKey {
+		apiKey, err = apiKeyRepo.Create(*apiLoginBody.Id)
+		if err != nil {
+			c.String(500, err.Error())
+		}
+
+		return apiKey
+	}
+
+	if apiKey != nil {
+		if apiKey.Expired() {
+			errDelete := apiKeyRepo.Delete(apiKey.Key)
+			if errDelete != nil {
+				c.String(500, errDelete.Error())
+			}
+			apiKey = createApiKey()
+		}
+	} else {
+		apiKey = createApiKey()
+	}
+
+	c.JSON(200, gin.H{"token": apiKey.Key})
 }
 
 func (a *Api) GetUserGetId(c *gin.Context, id UserId) {
@@ -49,7 +80,7 @@ func (a *Api) PostUserRegister(c *gin.Context) {
 		return
 	}
 
-	domainUserModel := domainUser.NewUser(*apiUser.Age, *apiUser.Biography, *apiUser.City, *apiUser.FirstName,
+	domainUserModel := models.NewUser(*apiUser.Age, *apiUser.Biography, *apiUser.City, *apiUser.FirstName,
 		*apiUser.SecondName, *apiUser.Password)
 
 	err = a.userUsecase.Register(domainUserModel)
