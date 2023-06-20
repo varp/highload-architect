@@ -9,6 +9,8 @@ import (
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/repos/mysql"
 )
 
+var ErrUserNotFound = fmt.Errorf("user not found")
+
 type userRepository struct {
 	db *sqlx.DB
 }
@@ -37,13 +39,12 @@ func (r *userRepository) Create(user *models.User) error {
 func (r *userRepository) Get(id string) (*models.User, error) {
 	row, err := r.db.Queryx("SELECT * FROM users WHERE id = ?", id)
 	if err != nil {
-		log.Fatalf("User with id %s not found", id)
+		log.Fatalf("Failed to retrieve user with ID (%s) from DB", id)
 		return nil, err
 	}
 
 	if !row.Next() {
-		err = fmt.Errorf("user with specified ID %s not found", id)
-		return nil, err
+		return nil, ErrUserNotFound
 	}
 
 	var u models.User
@@ -57,7 +58,7 @@ func (r *userRepository) Get(id string) (*models.User, error) {
 }
 
 func (r *userRepository) Update(user *models.User) error {
-	sql := "UPDATE users SET age = ?, biography = ?, city = ?, firstName = ?, secondName = ?, passwordHash = ? WHERE id = ?"
+	sql := "UPDATE users SET age = ?, biography = ?, city = ?, first_name = ?, second_name = ?, password_hash = ? WHERE id = ?"
 	_, err := r.db.Exec(sql, user.Age, user.Biography, user.City, user.FirstName, user.SecondName,
 		user.PasswordHash, user.Id)
 	if err != nil {

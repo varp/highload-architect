@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models"
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/repos"
@@ -64,12 +65,27 @@ func (a *Api) PostLogin(c *gin.Context) {
 }
 
 func (a *Api) GetUserGetId(c *gin.Context, id UserId) {
-	//domainUserModel, err := a.userUsecase.Get(id)
-	//if err != nil {
-	//	return err
-	//}
+	domainUserModel, err := a.userUsecase.Get(id)
+	if err != nil {
+		if errors.Is(err, repos.ErrUserNotFound) {
+			c.Status(404)
+			return
+		}
 
-	panic("implement me")
+		c.String(500, err.Error())
+		return
+	}
+
+	apiUser := User{
+		Age:        &domainUserModel.Age,
+		Biography:  &domainUserModel.Biography,
+		City:       &domainUserModel.City,
+		FirstName:  &domainUserModel.FirstName,
+		Id:         &domainUserModel.Id,
+		SecondName: &domainUserModel.SecondName,
+	}
+
+	c.JSON(200, apiUser)
 }
 
 func (a *Api) PostUserRegister(c *gin.Context) {
