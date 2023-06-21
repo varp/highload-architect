@@ -1,7 +1,7 @@
 .PHONY: go tools-oapi-codegen up
 
 define putenv
-	@touch .env
+	@test -f .env || cp default.env .env
 	@sed -e '/$1=/d' .env > .env.bak && mv .env.bak .env
 	@echo "$1=$2" >> .env
 endef
@@ -35,19 +35,14 @@ sql-migrate:
 
 # deploy
 up-infra up-dev: COMPOSE_FILE=deployments/docker-compose.dev.yml
-
-up-infra:
+update-env:
 	$(call putenv,COMPOSE_FILE,$(COMPOSE_FILE))
 	$(call putenv,COMPOSE_PROJECT_NAME,$(PROJECT_NAME))
+
+up-infra: update-env
 	docker-compose up -d --remove-orphans db
-
-up-dev:
-	$(call putenv,COMPOSE_FILE,$(COMPOSE_FILE))
-	$(call putenv,COMPOSE_PROJECT_NAME,$(PROJECT_NAME))
+up-dev: update-env
 	docker-compose up -d --remove-orphans app
-
-
-
 up: up-infra up-dev
 
 stop:
