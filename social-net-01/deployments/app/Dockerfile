@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.2
-FROM golang:1.19 AS builder
+FROM golang:1.20 AS builder
 WORKDIR /app
 COPY . .
 RUN go build -v -o social-net-server ./cmd/server

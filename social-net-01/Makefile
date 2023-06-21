@@ -48,7 +48,7 @@ up-dev:
 
 
 
-up: up-dev
+up: up-infra up-dev
 
 stop:
 	docker-compose stop

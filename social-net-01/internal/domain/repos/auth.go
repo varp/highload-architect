@@ -1,10 +1,11 @@
 package repos
 
 import (
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/models"
 	"go.vardan.dev/highload-architect/social-net-01/internal/domain/repos/mysql"
-	"time"
 )
 
 type apiKeyRepository struct {
@@ -31,7 +32,6 @@ func (a *apiKeyRepository) Create(userId string) (*models.ApiKey, error) {
 	authenticatedAt := time.Now().UTC()
 
 	_, err := a.db.Exec(sql, key, userId, authenticatedAt.Format(time.DateTime))
-
 	if err != nil {
 		return nil, err
 	}

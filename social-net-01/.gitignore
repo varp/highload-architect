@@ -28,3 +28,5 @@ go.work
 gen/
 
 .env
+
+social-net-server
