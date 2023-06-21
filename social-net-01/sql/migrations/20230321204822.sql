@@ -3,7 +3,7 @@ USE `social-net`
 
 CREATE TABLE IF NOT EXISTS `users`
 (
-    id            varchar(50) PRIMARY KEY,
+    id            varchar(36) PRIMARY KEY,
     age           int8,
     biography     text,
     city          varchar(50),

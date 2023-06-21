@@ -61,7 +61,7 @@ run:
 
 # build
 @build:
-	go build -v -o social-net-server ./cmd/server
+	CGO_ENABLED=0 go build -v -o social-net-server ./cmd/server
 
 @app:
 	docker buildx build -f deployments/app/Dockerfile -t $(APP):$(VERSION) -t $(APP):latest .

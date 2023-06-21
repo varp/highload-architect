@@ -8,6 +8,8 @@ services:
       context: ..
     environment:
       SOCIAL_NET_01_DB_HOST: db
+    ports:
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -19,7 +21,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${SOCIAL_NET_01_DB_PASS:-pass}
     volumes:
-      - "../sql/migrations:/sql/migrations"
+      - "../sql/migrations:/docker-entrypoint-initdb.d"
       - "../scripts:/scripts"
     ports:
       - "3306:3306"
