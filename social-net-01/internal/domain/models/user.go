@@ -18,6 +18,7 @@ type UserRepository interface {
 	Get(id string) (*User, error)
 	Update(u *User) error
 	Delete(u *User) error
+	Search(firstName, lastName string) ([]*User, error)
 }
 
 type User struct {

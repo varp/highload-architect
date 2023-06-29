@@ -108,6 +108,26 @@ func (a *Api) PostUserRegister(c *gin.Context) {
 	c.JSON(201, gin.H{"user_id": domainUserModel.Id})
 }
 
+func (a *Api) GetUserSearch(c *gin.Context, params GetUserSearchParams) {
+	if users, err := a.userUsecase.Search(params.FirstName, params.LastName); err != nil {
+		c.String(500, err.Error())
+	} else {
+		apiUsers := make([]User, len(users))
+		for i, user := range users {
+			apiUsers[i] = User{
+				Age:        &user.Age,
+				Biography:  &user.Biography,
+				City:       &user.City,
+				FirstName:  &user.FirstName,
+				Id:         &user.Id,
+				SecondName: &user.SecondName,
+			}
+		}
+
+		c.JSON(200, apiUsers)
+	}
+}
+
 func (a *Api) PutFriendDeleteUserId(c *gin.Context, userId UserId) {
 	// TODO implement me
 	panic("implement me")
@@ -139,11 +159,6 @@ func (a *Api) GetPostGetId(c *gin.Context, id PostId) {
 }
 
 func (a *Api) PutPostUpdate(c *gin.Context) {
-	// TODO implement me
-	panic("implement me")
-}
-
-func (a *Api) GetUserSearch(c *gin.Context, params GetUserSearchParams) {
 	// TODO implement me
 	panic("implement me")
 }

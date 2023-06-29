@@ -9,6 +9,7 @@ type UserUsecase interface {
 	Login(userId, password string) error
 	Register(u *models.User) error
 	Get(userId string) (*models.User, error)
+	Search(firstName, lastName string) ([]*models.User, error)
 }
 
 type userUsecase struct {
@@ -38,19 +39,13 @@ func (uu *userUsecase) Login(userId, password string) error {
 }
 
 func (uu *userUsecase) Register(user *models.User) error {
-	err := uu.ur.Create(user)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return uu.ur.Create(user)
 }
 
 func (uu *userUsecase) Get(userId string) (*models.User, error) {
-	u, err := uu.ur.Get(userId)
-	if err != nil {
-		return nil, err
-	}
+	return uu.ur.Get(userId)
+}
 
-	return u, nil
+func (uu *userUsecase) Search(firstName, lastName string) ([]*models.User, error) {
+	return uu.ur.Search(firstName, lastName)
 }

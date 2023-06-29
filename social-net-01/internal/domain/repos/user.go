@@ -76,3 +76,24 @@ func (r *userRepository) Delete(user *models.User) error {
 
 	return nil
 }
+
+func (r *userRepository) Search(firstName, lastName string) ([]*models.User, error) {
+	rows, err := r.db.Queryx("SELECT * FROM users WHERE first_name LIKE ? AND second_name LIKE ? ORDER BY id",
+		firstName+"%", lastName+"%")
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*models.User
+	for rows.Next() {
+		var u models.User
+		err = rows.StructScan(&u)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, &u)
+	}
+
+	return users, nil
+}
