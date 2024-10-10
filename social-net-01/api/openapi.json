@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "OTUS Highload Architect",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "paths": {
     "/login": {
@@ -15,8 +15,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "string",
-                    "example": "234"
+                    "$ref": "#/components/schemas/UserId"
                   },
                   "password": {
                     "type": "string",
@@ -77,8 +76,12 @@
                     "example": "Фамилия"
                   },
                   "age": {
+                    "deprecated": true,
                     "type": "integer",
                     "example": 18
+                  },
+                  "birthdate": {
+                    "$ref": "#/components/schemas/BirthDate"
                   },
                   "biography": {
                     "type": "string",
@@ -303,9 +306,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "text"
-                ],
+                "required": ["text"],
                 "properties": {
                   "text": {
                     "$ref": "#/components/schemas/PostText"
@@ -353,10 +354,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "id",
-                  "text"
-                ],
+                "required": ["id","text"],
                 "properties": {
                   "id": {
                     "$ref": "#/components/schemas/PostId"
@@ -523,6 +521,103 @@
           }
         }
       }
+    },
+    "/dialog/{user_id}/send": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "schema": {
+              "$ref": "#/components/schemas/UserId"
+            },
+            "required": true,
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": {
+                    "$ref": "#/components/schemas/DialogMessageText"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешно отправлено сообщение"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/5xx"
+          },
+          "503": {
+            "$ref": "#/components/responses/5xx"
+          }
+        }
+      }
+    },
+    "/dialog/{user_id}/list": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "schema": {
+              "$ref": "#/components/schemas/UserId"
+            },
+            "required": true,
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Диалог между двумя пользователями",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DialogMessage"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/5xx"
+          },
+          "503": {
+            "$ref": "#/components/responses/5xx"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -571,10 +666,15 @@
       }
     },
     "schemas": {
+      "BirthDate": {
+        "type": "string",
+        "description": "Дата рождения",
+        "format": "date",
+        "example": "2017-02-01"
+      },
       "UserId": {
         "type": "string",
-        "description": "Идентификатор пользователя",
-        "example": "e4d2e6b0-cde2-42c5-aac3-0b8316f21e58"
+        "description": "Идентификатор пользователя"
       },
       "User": {
         "type": "object",
@@ -597,6 +697,9 @@
             "example": 18,
             "description": "Возраст"
           },
+          "birthdate": {
+            "$ref": "#/components/schemas/BirthDate"
+          },
           "biography": {
             "type": "string",
             "example": "Хобби, интересы и т.п.",
@@ -618,6 +721,26 @@
         "type": "string",
         "description": "Текст поста",
         "example": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lectus mauris ultrices eros in cursus turpis massa."
+      },
+      "DialogMessageText": {
+        "type": "string",
+        "description": "Текст сообщения",
+        "example": "Привет, как дела?"
+      },
+      "DialogMessage": {
+        "type": "object",
+        "required": ["from", "to", "text"],
+        "properties": {
+          "from": {
+            "$ref": "#/components/schemas/UserId"
+          },
+          "to": {
+            "$ref": "#/components/schemas/UserId"
+          },
+          "text": {
+            "$ref": "#/components/schemas/DialogMessageText"
+          }
+        }
       },
       "Post": {
         "type": "object",

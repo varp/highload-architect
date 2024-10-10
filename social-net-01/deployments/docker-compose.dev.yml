@@ -23,6 +23,7 @@ services:
     volumes:
       - "../sql/migrations:/docker-entrypoint-initdb.d"
       - "../scripts:/scripts"
+      - "../../indexes-02:/var/lib/mysql-files/indexes-02"
     ports:
       - "3306:3306"
     healthcheck:

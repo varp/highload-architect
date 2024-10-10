@@ -4,7 +4,7 @@ import "time"
 
 type ApiKey struct {
 	Key             string    `db:"api_key"`
-	UserId          string    `db:"user_id"`
+	UserId          int64     `db:"user_id"`
 	AuthenticatedAt time.Time `db:"authenticated_at"`
 }
 

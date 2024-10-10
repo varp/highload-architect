@@ -14,13 +14,11 @@ type UserUsecase interface {
 
 type userUsecase struct {
 	ur models.UserRepository
-	ug models.UUIDGenerator
 	pe models.PasswordEncryptor
 }
 
-func NewUserUsecase(ur models.UserRepository, ug models.UUIDGenerator, pe models.PasswordEncryptor) UserUsecase {
-	models.Configure(ug, pe)
-	return &userUsecase{ur, ug, pe}
+func NewUserUsecase(ur models.UserRepository, pe models.PasswordEncryptor) UserUsecase {
+	return &userUsecase{ur, pe}
 }
 
 func (uu *userUsecase) Login(userId, password string) error {
@@ -31,7 +29,7 @@ func (uu *userUsecase) Login(userId, password string) error {
 		return retErr
 	}
 
-	if !u.CheckPassword(password) {
+	if !u.CheckPassword(uu.pe, password) {
 		return retErr
 	}
 
@@ -39,7 +37,14 @@ func (uu *userUsecase) Login(userId, password string) error {
 }
 
 func (uu *userUsecase) Register(user *models.User) error {
-	return uu.ur.Create(user)
+	u, err := uu.ur.Create(user)
+	if err != nil {
+		return err
+	}
+
+	user.Id = u
+
+	return nil
 }
 
 func (uu *userUsecase) Get(userId string) (*models.User, error) {

@@ -23,17 +23,21 @@ func NewUserRepository() models.UserRepository {
 	}
 }
 
-func (r *userRepository) Create(user *models.User) error {
-	sql := "INSERT INTO users (id, age, biography, city, first_name, second_name, password_hash) VALUES (?, ?, ?," +
-		" " +
-		"?, ?, ?, ?)"
-	_, err := r.db.Exec(sql, user.Id, user.Age, user.Biography, user.City, user.FirstName, user.SecondName,
-		user.PasswordHash)
+func (r *userRepository) Create(user *models.User) (userId int64, err error) {
+
+	sql := "INSERT INTO users (age, biography, city, first_name, second_name, password_hash) VALUES (?, ?, ?, ?, ?, ?)"
+	res, err := r.db.Exec(sql, user.Age, user.Biography, user.City, user.FirstName, user.SecondName, user.PasswordHash)
+
 	if err != nil {
-		return err
+		return
 	}
 
-	return nil
+	userId, err = res.LastInsertId()
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func (r *userRepository) Get(id string) (*models.User, error) {

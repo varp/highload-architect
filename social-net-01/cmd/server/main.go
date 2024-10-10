@@ -18,7 +18,7 @@ func main() {
 		errLoadingSwagger = iota + 1
 	)
 
-	uu := usecases.NewUserUsecase(repos.NewUserRepository(), tools.NewUUIDGenerator(), tools.NewPasswordEncryptor())
+	uu := usecases.NewUserUsecase(repos.NewUserRepository(), tools.NewPasswordEncryptor())
 	apiV1 := v1.NewApi(uu)
 
 	swagger, err := v1.GetSwagger()

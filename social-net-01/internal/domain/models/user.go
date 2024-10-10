@@ -1,9 +1,5 @@
 package models
 
-import (
-	"fmt"
-)
-
 type UUIDGenerator interface {
 	Generate() string
 }
@@ -14,7 +10,7 @@ type PasswordEncryptor interface {
 }
 
 type UserRepository interface {
-	Create(u *User) error
+	Create(u *User) (int64, error)
 	Get(id string) (*User, error)
 	Update(u *User) error
 	Delete(u *User) error
@@ -22,7 +18,7 @@ type UserRepository interface {
 }
 
 type User struct {
-	Id           string `db:"id"`
+	Id           int64  `db:"id"`
 	Age          int    `db:"age"`
 	Biography    string `db:"biography"`
 	City         string `db:"city"`
@@ -31,50 +27,10 @@ type User struct {
 	PasswordHash string `db:"password_hash"`
 }
 
-var (
-	idGenerator       UUIDGenerator
-	passwordEncryptor PasswordEncryptor
-)
-
-func Configure(generator UUIDGenerator, encryptor PasswordEncryptor) {
-	idGenerator = generator
-	passwordEncryptor = encryptor
-}
-
-func checkConfiguration() {
-	if idGenerator == nil {
-		panic(fmt.Errorf("confgiuration error: idGenerator is nil"))
-	}
-
-	if passwordEncryptor == nil {
-		panic(fmt.Errorf("configuration error: passwordEncryptor is nil"))
-	}
-}
-
-func NewUser(age int, biography, city, firstName, secondName, password string) *User {
-	checkConfiguration()
-
-	u := User{
-		Id:           idGenerator.Generate(),
-		Age:          age,
-		Biography:    biography,
-		City:         city,
-		FirstName:    firstName,
-		SecondName:   secondName,
-		PasswordHash: passwordEncryptor.Encrypt(password),
-	}
-
-	return &u
-}
-
-func (u *User) SetPassword(password string) {
-	checkConfiguration()
-
+func (u *User) SetPassword(passwordEncryptor PasswordEncryptor, password string) {
 	u.PasswordHash = passwordEncryptor.Encrypt(password)
 }
 
-func (u *User) CheckPassword(password string) bool {
-	checkConfiguration()
-
+func (u *User) CheckPassword(passwordEncryptor PasswordEncryptor, password string) bool {
 	return passwordEncryptor.Compare(u.PasswordHash, password)
 }
